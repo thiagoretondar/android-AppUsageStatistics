@@ -19,6 +19,7 @@ package com.example.android.appusagestatistics;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -142,6 +143,13 @@ public class AppUsageStatisticsFragment extends Fragment {
                 .queryUsageStats(intervalType, cal.getTimeInMillis(),
                         System.currentTimeMillis());
 
+        List<UsageStats> newUsage = new ArrayList<>(1);
+        for (UsageStats u : queryUsageStats) {
+            if (u.getPackageName().equals("com.android.mms")) {
+                newUsage.add(u);
+            }
+        }
+
         if (queryUsageStats.size() == 0) {
             Log.i(TAG, "The user may not allow the access to apps usage. ");
             Toast.makeText(getActivity(),
@@ -155,6 +163,7 @@ public class AppUsageStatisticsFragment extends Fragment {
                 }
             });
         }
+
         return queryUsageStats;
     }
 
@@ -167,13 +176,17 @@ public class AppUsageStatisticsFragment extends Fragment {
     //VisibleForTesting
     void updateAppsList(List<UsageStats> usageStatsList) {
         List<CustomUsageStats> customUsageStatsList = new ArrayList<>();
+        PackageManager pm = getActivity().getPackageManager();
         for (int i = 0; i < usageStatsList.size(); i++) {
             CustomUsageStats customUsageStats = new CustomUsageStats();
             customUsageStats.usageStats = usageStatsList.get(i);
+            String packageName = customUsageStats.usageStats.getPackageName();
             try {
-                Drawable appIcon = getActivity().getPackageManager()
-                        .getApplicationIcon(customUsageStats.usageStats.getPackageName());
+                Drawable appIcon = pm.getApplicationIcon(packageName);
+                ApplicationInfo applicationInfo = pm.getApplicationInfo(packageName, 0);
+                String appName = pm.getApplicationLabel(applicationInfo).toString();
                 customUsageStats.appIcon = appIcon;
+                customUsageStats.appName = appName;
             } catch (PackageManager.NameNotFoundException e) {
                 Log.w(TAG, String.format("App Icon is not found for %s",
                         customUsageStats.usageStats.getPackageName()));

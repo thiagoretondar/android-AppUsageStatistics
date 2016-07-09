@@ -16,6 +16,7 @@
 
 package com.example.android.appusagestatistics;
 
+import android.content.pm.ApplicationInfo;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,10 +78,12 @@ public class UsageListAdapter extends RecyclerView.Adapter<UsageListAdapter.View
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        viewHolder.getPackageName().setText(
-                mCustomUsageStatsList.get(position).usageStats.getPackageName());
-        long lastTimeUsed = mCustomUsageStatsList.get(position).usageStats.getLastTimeUsed();
-        viewHolder.getLastTimeUsed().setText(mDateFormat.format(new Date(lastTimeUsed)));
+
+        String appName = mCustomUsageStatsList.get(position).appName;
+        viewHolder.getPackageName().setText(appName);
+        long minutes = mCustomUsageStatsList.get(position).usageStats.getTotalTimeInForeground();
+        minutes = minutes / 60000;
+        viewHolder.getLastTimeUsed().setText(String.valueOf(minutes) + " min");
         viewHolder.getAppIcon().setImageDrawable(mCustomUsageStatsList.get(position).appIcon);
     }
 

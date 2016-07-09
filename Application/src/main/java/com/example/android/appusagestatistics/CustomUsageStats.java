@@ -23,6 +23,7 @@ import android.graphics.drawable.Drawable;
  * Entity class represents usage stats and app icon.
  */
 public class CustomUsageStats {
+    public String appName;
     public UsageStats usageStats;
     public Drawable appIcon;
 }
